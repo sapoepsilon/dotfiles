@@ -1,0 +1,38 @@
+{
+  "_comment": "Add the entries below to the 'mcpServers' object in ~/.claude.json (top-level, alongside any existing servers).",
+  "_comment_2": "The 'obsidian-local' entry needs the Local REST API plugin installed in Obsidian and the API key pasted in.",
+  "_comment_3": "The 'vault-fs-remote' entry talks to the Proxmox LXC at <your-lxc-ip> (or wherever you put it) and needs no Obsidian app.",
+  "mcpServers": {
+    "obsidian-local": {
+      "type": "stdio",
+      "command": "/opt/homebrew/bin/uvx",
+      "args": ["mcp-obsidian"],
+      "env": {
+        "OBSIDIAN_API_KEY": "REPLACE_WITH_KEY_FROM_LOCAL_REST_API_PLUGIN",
+        "OBSIDIAN_HOST": "127.0.0.1",
+        "OBSIDIAN_PORT": "27124",
+        "OBSIDIAN_PROTOCOL": "https"
+      }
+    },
+    "filesystem-vault-local": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "REPLACE_WITH_LOCAL_VAULT_PATH"
+      ],
+      "env": {}
+    },
+    "vault-fs-remote": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://<your-lxc-ip>:9876/servers/vault-fs/sse"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -1,0 +1,17 @@
+[Unit]
+Description=MCP filesystem server for LLM wiki vault, exposed over HTTP/SSE
+Documentation=https://github.com/sparfenyuk/mcp-proxy
+After=rclone-vault.service network-online.target
+Requires=rclone-vault.service
+
+[Service]
+Type=simple
+Environment=PATH=/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/bin/bash -c "/root/.local/bin/mcp-proxy --pass-environment --host 0.0.0.0 --port 9876 --named-server vault-fs \"/bin/mcp-server-filesystem /mnt/vault/llm-vault\""
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,27 @@
+[Unit]
+Description=rclone mount of Google Drive vault for LLM wiki
+Documentation=https://rclone.org/commands/rclone_mount/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStartPre=/bin/mkdir -p /mnt/vault
+ExecStart=/bin/rclone mount gdrive: /mnt/vault \
+  --allow-other \
+  --vfs-cache-mode writes \
+  --vfs-cache-max-age 1h \
+  --vfs-cache-max-size 1G \
+  --buffer-size 32M \
+  --dir-cache-time 1m \
+  --poll-interval 30s \
+  --log-file /var/log/rclone-vault.log \
+  --log-level INFO \
+  --umask 002
+ExecStop=/bin/fusermount3 -u /mnt/vault
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
