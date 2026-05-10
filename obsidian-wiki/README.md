@@ -110,6 +110,36 @@ curl -i http://<lxc-ip>:9876/servers/vault-fs/sse
 # Should hold the connection open with Content-Type: text/event-stream
 ```
 
+### Reaching the LXC from anywhere — Tailscale (recommended)
+
+For agents on machines that aren't on the same LAN as the LXC (different subnet, different VLAN, on the road, mobile, cloud), install Tailscale on the LXC so any Tailnet member can reach it:
+
+```bash
+# On the Proxmox HOST (one-time, so the kernel can give the LXC a TUN device):
+modprobe tun
+echo tun > /etc/modules-load.d/tun.conf
+cat >> /etc/pve/lxc/<vmid>.conf <<EOF
+
+lxc.cgroup2.devices.allow: c 10:200 rwm
+lxc.mount.entry: /dev/net dev/net none bind,create=dir 0 0
+EOF
+pct reboot <vmid>
+
+# Inside the LXC:
+curl -fsSL https://tailscale.com/install.sh | sh
+systemctl enable --now tailscaled
+tailscale up --hostname=obsidian-bridge --ssh
+# click the URL it prints, authorize on your Tailnet
+tailscale ip -4   # note the 100.x.x.x address
+```
+
+After that, the MCP endpoint is reachable from any Tailnet device at:
+
+- `http://obsidian-bridge:9876/servers/vault-fs/sse` (MagicDNS, survives IP changes)
+- `http://100.x.x.x:9876/servers/vault-fs/sse` (raw Tailscale IP)
+
+LAN-only agents (e.g. another machine on `192.168.50.x`) can keep using the LAN IP `http://<lan-ip>:9876/...` directly.
+
 ### MCP client config — connect any agent
 
 Pick the snippet from `mcp/`:

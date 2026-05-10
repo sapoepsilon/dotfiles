@@ -24,7 +24,7 @@
       "args": [
         "-y",
         "mcp-remote",
-        "http://<your-lxc-ip>:9876/servers/vault-fs/sse"
+        "http://obsidian-bridge:9876/servers/vault-fs/sse"
       ]
     }
   }

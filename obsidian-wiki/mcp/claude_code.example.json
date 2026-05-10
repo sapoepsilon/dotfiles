@@ -1,7 +1,7 @@
 {
   "_comment": "Add the entries below to the 'mcpServers' object in ~/.claude.json (top-level, alongside any existing servers).",
   "_comment_2": "The 'obsidian-local' entry needs the Local REST API plugin installed in Obsidian and the API key pasted in.",
-  "_comment_3": "The 'vault-fs-remote' entry talks to the Proxmox LXC at <your-lxc-ip> (or wherever you put it) and needs no Obsidian app.",
+  "_comment_3": "The 'vault-fs-remote' entry talks to the Proxmox LXC. Use a LAN IP if the agent's machine is on the same network, or the Tailscale MagicDNS name (e.g. obsidian-bridge) / Tailscale IP if reaching across networks. No Obsidian app needed.",
   "mcpServers": {
     "obsidian-local": {
       "type": "stdio",
@@ -30,9 +30,11 @@
       "args": [
         "-y",
         "mcp-remote",
-        "http://<your-lxc-ip>:9876/servers/vault-fs/sse"
+        "http://obsidian-bridge:9876/servers/vault-fs/sse"
       ],
-      "env": {}
+      "env": {},
+      "_alt_lan_ip": "http://<your-lxc-lan-ip>:9876/servers/vault-fs/sse",
+      "_alt_tailscale_ip": "http://<100.x.x.x>:9876/servers/vault-fs/sse"
     }
   }
 }
